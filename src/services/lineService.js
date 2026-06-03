@@ -8,6 +8,7 @@ import { messagingApi } from '@line/bot-sdk';
 import { saveUser, saveHokatsuTarget, getUser } from './sheetsService.js';
 import { calcAge } from './ageService.js';
 import { getMilestonesWithHokatsu } from './hokatsuService.js';
+import { getVaccines } from '../data/vaccineSchedule.js';
 
 // LINE への返信クライアント（アクセストークンで認証）
 const client = new messagingApi.MessagingApiClient({
@@ -90,8 +91,9 @@ async function handleToday(replyToken, lineUserId) {
 
   const age = calcAge(user.birthday);
   const data = getMonthData(user.birthday, age.months, user.hokatsuTarget);
+  const vaccines = getVaccines(age.months);
 
-  const text = [
+  const lines = [
     `生後${age.months}ヶ月${age.days}日`,
     '',
     '【今月の目安】',
@@ -99,9 +101,13 @@ async function handleToday(replyToken, lineUserId) {
     '',
     '【来月の見通し】',
     ...data.next.map(t => `・${t}`),
-  ].join('\n');
+  ];
 
-  return reply(replyToken, text);
+  if (vaccines.length > 0) {
+    lines.push('', '【今月の予防接種】', ...vaccines.map(v => `・${v}`));
+  }
+
+  return reply(replyToken, lines.join('\n'));
 }
 
 async function handleNextMonth(replyToken, lineUserId) {
@@ -111,8 +117,9 @@ async function handleNextMonth(replyToken, lineUserId) {
   const age = calcAge(user.birthday);
   const nextMonths = Math.min(age.months + 1, 12);
   const data = getMonthData(user.birthday, nextMonths, user.hokatsuTarget);
+  const vaccines = getVaccines(nextMonths);
 
-  const text = [
+  const lines = [
     `生後${nextMonths}ヶ月の情報`,
     '',
     '【今月の目安】',
@@ -120,9 +127,13 @@ async function handleNextMonth(replyToken, lineUserId) {
     '',
     '【来月の見通し】',
     ...data.next.map(t => `・${t}`),
-  ].join('\n');
+  ];
 
-  return reply(replyToken, text);
+  if (vaccines.length > 0) {
+    lines.push('', '【予防接種】', ...vaccines.map(v => `・${v}`));
+  }
+
+  return reply(replyToken, lines.join('\n'));
 }
 
 // ── ヘルパー ────────────────────────────

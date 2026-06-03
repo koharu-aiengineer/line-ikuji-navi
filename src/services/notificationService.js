@@ -9,6 +9,7 @@ import { messagingApi } from '@line/bot-sdk';
 import { getAllUsers } from './sheetsService.js';
 import { calcAge } from './ageService.js';
 import { getMilestonesWithHokatsu } from './hokatsuService.js';
+import { getVaccines } from '../data/vaccineSchedule.js';
 
 /**
  * 通知ジョブを起動する（サーバー起動時に1回呼ぶ）
@@ -59,7 +60,9 @@ export async function runNotificationJob() {
       const all = getMilestonesWithHokatsu(user.birthday, hokatsuTarget);
       const data = all[String(age.months)];
 
-      const text = [
+      const vaccines = getVaccines(age.months);
+
+      const lines = [
         `生後${age.months}ヶ月になりました！`,
         '',
         '【今月の目安】',
@@ -67,7 +70,13 @@ export async function runNotificationJob() {
         '',
         '【来月の見通し】',
         ...data.next.map(t => `・${t}`),
-      ].join('\n');
+      ];
+
+      if (vaccines.length > 0) {
+        lines.push('', '【今月の予防接種】', ...vaccines.map(v => `・${v}`));
+      }
+
+      const text = lines.join('\n');
 
       await client.pushMessage({
         to: user.lineUserId,
