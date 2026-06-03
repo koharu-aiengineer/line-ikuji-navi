@@ -24,8 +24,10 @@ function getClient() {
 
   const auth = new google.auth.JWT({
     email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    // 前後のクォートを除去し、\n を実際の改行に変換
-    key: GOOGLE_PRIVATE_KEY.replace(/^["']|["']$/g, '').replace(/\\n/g, '\n'),
+    // Base64エンコード版を優先、なければ従来の \n 変換で処理
+    key: process.env.GOOGLE_PRIVATE_KEY_BASE64
+      ? Buffer.from(process.env.GOOGLE_PRIVATE_KEY_BASE64, 'base64').toString('utf8')
+      : GOOGLE_PRIVATE_KEY.replace(/^["']|["']$/g, '').replace(/\\n/g, '\n'),
     scopes: SCOPES,
   });
 
