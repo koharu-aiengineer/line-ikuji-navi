@@ -24,8 +24,8 @@ function getClient() {
 
   const auth = new google.auth.JWT({
     email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    // .env では改行を \n と書くため、実際の改行文字に戻す
-    key: GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    // 前後のクォートを除去し、\n を実際の改行に変換
+    key: GOOGLE_PRIVATE_KEY.replace(/^["']|["']$/g, '').replace(/\\n/g, '\n'),
     scopes: SCOPES,
   });
 
