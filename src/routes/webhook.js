@@ -13,7 +13,9 @@ const router = Router();
 // POST /webhook
 router.post('/', (req, res, next) => {
   console.log('Webhook 受信');
-  if (!process.env.LINE_CHANNEL_SECRET) {
+  const secret = process.env.LINE_CHANNEL_SECRET;
+  console.log('SECRET 確認:', secret ? `長さ=${secret.length} 先頭4文字=${secret.slice(0, 4)}` : '未設定');
+  if (!secret) {
     console.error('LINE_CHANNEL_SECRET が未設定です');
     return res.sendStatus(500);
   }
