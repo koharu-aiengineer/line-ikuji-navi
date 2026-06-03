@@ -1,0 +1,8 @@
+# 環境変数ファイル（秘密情報が含まれるためGitに含めない）
+.env
+
+# Node.jsの依存パッケージ（npm installで再生成できるため含めない）
+node_modules/
+
+# macOSのシステムファイル
+.DS_Store
