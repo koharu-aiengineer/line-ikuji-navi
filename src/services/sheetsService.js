@@ -14,11 +14,11 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
  * @returns {import('googleapis').sheets_v4.Sheets}
  */
 function getClient() {
-  const { GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY } = process.env;
+  const { GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY, GOOGLE_PRIVATE_KEY_BASE64 } = process.env;
 
-  if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_PRIVATE_KEY) {
+  if (!GOOGLE_SERVICE_ACCOUNT_EMAIL || (!GOOGLE_PRIVATE_KEY && !GOOGLE_PRIVATE_KEY_BASE64)) {
     throw new Error(
-      '.env に GOOGLE_SERVICE_ACCOUNT_EMAIL と GOOGLE_PRIVATE_KEY が必要です'
+      '.env に GOOGLE_SERVICE_ACCOUNT_EMAIL と GOOGLE_PRIVATE_KEY（またはGOOGLE_PRIVATE_KEY_BASE64）が必要です'
     );
   }
 
